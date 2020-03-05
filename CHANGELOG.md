@@ -1,13 +1,18 @@
 # Change Log
 
-## **0.0.3**
+#### **0.0.4**
+
+- Added icon and category.
+- Changed changelog format.
+
+#### **0.0.3**
 
 - Retroactively updated changelog for 0.0.2.
 
-## **0.0.2**
+#### **0.0.2**
 
 - Fixed display name.
 
-## **0.0.1**
+#### **0.0.1**
 
 - Initial release.
