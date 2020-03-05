@@ -1,6 +1,6 @@
 {
 	"name": "quote-list",
-	"displayName": "Toggle Quotes",
+	"displayName": "Quote List",
 	"description": "Quote each element of a list.",
 	"version": "0.0.1",
 	"publisher": "jmviz",
