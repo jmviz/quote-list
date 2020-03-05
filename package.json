@@ -2,15 +2,15 @@
 	"name": "quote-list",
 	"displayName": "Quote List",
 	"description": "Quote each element of a list.",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "jmviz",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/jmviz/quote-list"
 	},
 	"categories": [
-        "Other"
-    ],
+		"Other"
+	],
 	"engines": {
 		"vscode": "^1.32.0"
 	},
@@ -48,7 +48,11 @@
 				},
 				"quoteList.surroundingPairs": {
 					"type": "object",
-					"default": {"(": ")", "{": "}", "[": "]"},
+					"default": {
+						"(": ")",
+						"{": "}",
+						"[": "]"
+					},
 					"markdownDescription": "An object of key-value pairs of strings. If input to `Quote List: Input Quote` is a key in this object, the left quote will be the key and the right quote will be its associated value. Default is `{\"(\": \")\", \"{\": \"}\", \"[\": \"]\"}`."
 				}
 			}
