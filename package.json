@@ -1,0 +1,108 @@
+{
+	"name": "quote-list",
+	"displayName": "Toggle Quotes",
+	"description": "Quote each element of a list.",
+	"version": "0.0.1",
+	"publisher": "jmviz",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jmviz/quote-list"
+	},
+	"categories": [
+        "Other"
+    ],
+	"engines": {
+		"vscode": "^1.32.0"
+	},
+	"activationEvents": [
+		"onCommand:extension.quoteListPrimary",
+		"onCommand:extension.quoteListSecondary",
+		"onCommand:extension.quoteListTertiary",
+		"onCommand:extension.quoteListInput",
+		"onCommand:extension.quoteListCustom"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "Quote List",
+			"properties": {
+				"quoteList.separator": {
+					"type": "string",
+					"default": ",",
+					"description": "Default separator string"
+				},
+				"quoteList.primaryQuote": {
+					"type": "string",
+					"default": "\"",
+					"markdownDescription": "Quote string used by `Quote List: Primary Quote`"
+				},
+				"quoteList.secondaryQuote": {
+					"type": "string",
+					"default": "'",
+					"markdownDescription": "Quote string used by `Quote List: Secondary Quote`"
+				},
+				"quoteList.tertiaryQuote": {
+					"type": "string",
+					"default": "`",
+					"markdownDescription": "Quote string used by `Quote List: Tertiary Quote`"
+				},
+				"quoteList.surroundingPairs": {
+					"type": "object",
+					"default": {"(": ")", "{": "}", "[": "]"},
+					"markdownDescription": "An object of key-value pairs of strings. If input to `Quote List: Input Quote` is a key in this object, the left quote will be the key and the right quote will be its associated value. Default is `{\"(\": \")\", \"{\": \"}\", \"[\": \"]\"}`."
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "extension.quoteListPrimary",
+				"title": "Quote List: Primary Quote"
+			},
+			{
+				"command": "extension.quoteListSecondary",
+				"title": "Quote List: Secondary Quote"
+			},
+			{
+				"command": "extension.quoteListTertiary",
+				"title": "Quote List: Tertiary Quote"
+			},
+			{
+				"command": "extension.quoteListInput",
+				"title": "Quote List: Input Quote"
+			},
+			{
+				"command": "extension.quoteListCustom",
+				"title": "Quote List: Custom Quote"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "extension.quoteListPrimary",
+				"key": "ctrl+shift+'",
+				"mac": "cmd+shift+'",
+				"when": "editorTextFocus && !editorReadonly"
+			},
+			{
+				"command": "extension.quoteListSecondary",
+				"key": "ctrl+'",
+				"mac": "cmd+'",
+				"when": "editorTextFocus && !editorReadonly"
+			},
+			{
+				"command": "extension.quoteListTertiary",
+				"key": "ctrl+alt+'",
+				"mac": "cmd+alt+'",
+				"when": "editorTextFocus && !editorReadonly"
+			},
+			{
+				"command": "extension.quoteListInput",
+				"key": "alt+shift+'",
+				"when": "editorTextFocus && !editorReadonly"
+			}
+		]
+	},
+	"scripts": {},
+	"devDependencies": {
+		"@types/vscode": "^1.32.0"
+	}
+}
