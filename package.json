@@ -17,36 +17,42 @@
 		"vscode": "^1.32.0"
 	},
 	"activationEvents": [
-		"onCommand:extension.quoteListPrimary",
-		"onCommand:extension.quoteListSecondary",
-		"onCommand:extension.quoteListTertiary",
-		"onCommand:extension.quoteListInput",
-		"onCommand:extension.quoteListCustom"
+		"onCommand:extension.quoteList",
+		"onCommand:extension.quoteListInput"
 	],
 	"main": "./extension.js",
 	"contributes": {
 		"configuration": {
 			"title": "Quote List",
 			"properties": {
-				"quoteList.separator": {
-					"type": "string",
-					"default": ",",
-					"description": "Default separator string"
-				},
-				"quoteList.primaryQuote": {
+				"quoteList.quote": {
 					"type": "string",
 					"default": "\"",
-					"markdownDescription": "Quote string used by `Quote List: Primary Quote`"
+					"description": "Default quote string"
 				},
-				"quoteList.secondaryQuote": {
+				"quoteList.inputSeparator": {
 					"type": "string",
-					"default": "'",
-					"markdownDescription": "Quote string used by `Quote List: Secondary Quote`"
+					"default": ",",
+					"description": "Default regular expression to match input separator, which separates items in selection."
 				},
-				"quoteList.tertiaryQuote": {
+				"quoteList.outputSeparator": {
 					"type": "string",
-					"default": "`",
-					"markdownDescription": "Quote string used by `Quote List: Tertiary Quote`"
+					"default": ",",
+					"description": "Default output separator string, which will replace the input separator between items in selection."
+				},
+				"quoteList.fallbackSeparators": {
+					"type": "object",
+					"default": {
+						"\\t": ", ",
+						"\\n": ",\n",
+						":": ", ",
+						";": ", ",
+						"\\|": ", ",
+						"\\^": ", ",
+						"~": ", ",
+						" +": ", "
+					},
+					"description": "An object of key-value pairs of strings. Each key is an input separator regular expression and each value is a corresponding output separator string. This is used if the default input separator is not found in the selection when using 'Quote List'. Each pair is tried in order until one of the input separators is found in the selection."
 				},
 				"quoteList.surroundingPairs": {
 					"type": "object",
@@ -55,50 +61,44 @@
 						"{": "}",
 						"[": "]"
 					},
-					"markdownDescription": "An object of key-value pairs of strings. If input to `Quote List: Input Quote` is a key in this object, the left quote will be the key and the right quote will be its associated value. Default is `{\"(\": \")\", \"{\": \"}\", \"[\": \"]\"}`."
+					"description": "An object of key-value pairs of strings. If quote string input using 'Quote List by Input' is a key in this object, the left quote will be the key and the right quote will be its associated value."
 				}
 			}
 		},
 		"commands": [
 			{
-				"command": "extension.quoteListPrimary",
-				"title": "Quote List: Primary Quote"
-			},
-			{
-				"command": "extension.quoteListSecondary",
-				"title": "Quote List: Secondary Quote"
-			},
-			{
-				"command": "extension.quoteListTertiary",
-				"title": "Quote List: Tertiary Quote"
+				"command": "extension.quoteList",
+				"title": "Quote List"
 			},
 			{
 				"command": "extension.quoteListInput",
-				"title": "Quote List: Input Quote"
-			},
-			{
-				"command": "extension.quoteListCustom",
-				"title": "Quote List: Custom Quote"
+				"title": "Quote List by Input"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "extension.quoteListPrimary",
+				"command": "extension.quoteList",
 				"key": "ctrl+shift+'",
 				"mac": "cmd+shift+'",
 				"when": "editorTextFocus && !editorReadonly"
 			},
 			{
-				"command": "extension.quoteListSecondary",
+				"command": "extension.quoteList",
 				"key": "ctrl+'",
 				"mac": "cmd+'",
-				"when": "editorTextFocus && !editorReadonly"
+				"when": "editorTextFocus && !editorReadonly",
+				"args": {
+					"quote": "'"
+				}
 			},
 			{
-				"command": "extension.quoteListTertiary",
+				"command": "extension.quoteList",
 				"key": "ctrl+alt+'",
 				"mac": "cmd+alt+'",
-				"when": "editorTextFocus && !editorReadonly"
+				"when": "editorTextFocus && !editorReadonly",
+				"args": {
+					"quote": "`"
+				}
 			},
 			{
 				"command": "extension.quoteListInput",

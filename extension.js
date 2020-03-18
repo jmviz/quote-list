@@ -1,91 +1,142 @@
-const vscode = require('vscode');
+const vscode = require("vscode");
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 
 function activate(context) {
-	
-	let quoteListPrimary = vscode.commands.registerCommand(
-		'extension.quoteListPrimary', () => quoteListHandler("primary")
+	let quoteList = vscode.commands.registerCommand(
+		"extension.quoteList", (args) => quoteListHandler("auto", args)
 	);
-	context.subscriptions.push(quoteListPrimary);
-	let quoteListSecondary = vscode.commands.registerCommand(
-		'extension.quoteListSecondary', () => quoteListHandler("secondary")
-	);
-	context.subscriptions.push(quoteListSecondary);
-	let quoteListTertiary = vscode.commands.registerCommand(
-		'extension.quoteListTertiary', () => quoteListHandler("tertiary")
-	);
-	context.subscriptions.push(quoteListTertiary);
+	context.subscriptions.push(quoteList);
 	let quoteListInput = vscode.commands.registerCommand(
-		'extension.quoteListInput', () => quoteListHandler("input")
+		"extension.quoteListInput", () => quoteListHandler("input")
 	);
 	context.subscriptions.push(quoteListInput);
-	let quoteListCustom = vscode.commands.registerCommand(
-		'extension.quoteListCustom', (args) => quoteListHandler("custom", args)
-	);
-	context.subscriptions.push(quoteListCustom);
 }
 
 function deactivate() {}
 
 function quoteListHandler(type, args) {
-	let config = vscode.workspace.getConfiguration('quoteList');
-	let sep = config.separator;
-	let q0 = "", q1 = q0;
-	let quoteType = type + "Quote";
-	if (quoteType in config) q1 = q0 = config[quoteType];
+	let config = vscode.workspace.getConfiguration("quoteList");
+	if (type == "input") {
+		makeEditFromInput(config);
+		return;
+	}
+	let inSep = new RegExp(config.inputSeparator);
+	let outSep = escape(config.outputSeparator);
+	let q0 = escape(config.quote);
+	let q1 = q0;
+	let fallbackSeps = config.fallbackSeparators;
+	let fuck;
 	if (args) {
 		if ("quoteLeft" in args && "quoteRight" in args) {
 			[q0, q1] = [args.quoteLeft, args.quoteRight];
 		} else if ("quote" in args) {
 			q1 = q0 = args.quote;
 		}
-		if ("separator" in args) sep = args.separator;
+		if ("inputSeparator" in args) inSep = new RegExp(args.inputSeparator);
+		if ("outputSeparator" in args) outSep = args.outputSeparator;
+		if ("fallbackSeparators" in args) fallbackSeps = args.fallbackSeparators;
 	}
-	if (type == "input") {
+	makeEdit(inSep, outSep, q0, q1, fallbackSeps);
+}
+
+function makeEditFromInput(config) {
+	vscode.window.showInputBox({
+		ignoreFocusOut: true,
+		prompt: "Enter regular expression to match input separator",
+		value: config.inputSeparator
+	}).then(inSep => {
+		if (inSep === undefined) return;
+		inSep = new RegExp(inSep);
 		vscode.window.showInputBox({
 			ignoreFocusOut: true,
-			prompt: 'Enter quote string'
-		}).then(q => {
-			if (q && q !== undefined && q.length > 0) {
+			prompt: "Enter string for output separator",
+			value: unescape(config.outputSeparator)
+		}).then(outSep => {
+			if (outSep === undefined) return;
+			outSep = escape(outSep);
+			vscode.window.showInputBox({
+				ignoreFocusOut: true,
+				prompt: "Enter string for quote",
+				value: unescape(config.quote)
+			}).then(q => {
+				if (q === undefined) return;
+				q = escape(q);
 				let sym = config.surroundingPairs;
 				if (q in sym) {
 					[q0, q1] = [q, sym[q]];
 				} else {
 					q1 = q0 = q;
 				}
-				makeEdit(sep, q0, q1);
-			}  
-		});
-	} else {
-		makeEdit(sep, q0, q1);
-	}
+				makeEdit(inSep, outSep, q0, q1);
+			 })
+		 })
+	 });
 }
 
-function makeEdit(sep, q0, q1) {
+function escape(s) {
+	let charmap = {
+		"n": "\n",
+		"r": "\r",
+		"f": "\f",
+		"t": "\t",
+		"b": "\b"
+	};
+	let escaped = s.replace(/\\(.)/g, function(_, char) {
+		return (char in charmap) ? charmap[char] : char;
+	});
+	return escaped;
+}
+
+function unescape(s) {
+	let charmap = {
+		"\n": "\\n",
+		"\r": "\\r",
+		"\f": "\\f",
+		"\t": "\\t",
+		"\b": "\\b"
+	};
+	let unescaped = s.replace(/./g, function(char) {
+		return (char in charmap) ? charmap[char] : char;
+	});
+	return unescaped;
+}
+
+function makeEdit(inSep, outSep, q0, q1, fallbackSeps) {
 	let editor = vscode.window.activeTextEditor;
 	if (!editor) return;
 	let doc = editor.document;
 	editor.edit(edit => {
 		for (let sel of editor.selections) {
 			let text = doc.getText(sel);
-			let quotedText = quoteList(text, sep, q0, q1);
+			let quotedText = quoteList(text, inSep, outSep, q0, q1, fallbackSeps);
 			edit.replace(sel, quotedText);
 		}
 	})
 }
 
-function quoteList(text, sep, q0, q1) {
+function quoteList(text, inSep, outSep, q0, q1, fallbackSeps) {
 	let quotedText = "";
-	let items = text.split(sep);
-	if (items.length == 1) return items[0];
+	let items = text.split(inSep);
+	if (items.length == 1 && fallbackSeps) {
+		for (let fInSep in fallbackSeps) {
+			items = text.split(new RegExp(fInSep));
+			if (items.length > 1) {
+				outSep = fallbackSeps[fInSep];
+				break;
+			}
+		}
+	}
+	if (items.length == 1) {
+		return items[0];
+	}
 	for (let [i, item] of items.entries()) {
 		let start = item.match(/^\s*/)[0];
 		let end = item.match(/\s*$/)[0];
 		item = item.trim();
-		let s = (i < items.length - 1) ? sep : "";
+		let s = (i < items.length - 1) ? outSep : "";
 		quotedText += start + q0 + item + q1 + s + end;
 	}
 	return quotedText;
