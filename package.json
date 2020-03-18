@@ -2,7 +2,7 @@
 	"name": "quote-list",
 	"displayName": "Quote List",
 	"description": "Quote each element of a list.",
-	"version": "0.0.4",
+	"version": "0.1.0",
 	"publisher": "jmviz",
 	"repository": {
 		"type": "git",
