@@ -1,0 +1,14 @@
+// https://code.visualstudio.com/api/extension-guides/web-extensions#test-your-web-extension
+
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "watch-web",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": ["$ts-webpack-watch"]
+    }
+  ]
+}

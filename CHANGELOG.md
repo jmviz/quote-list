@@ -1,5 +1,9 @@
 # Change Log
 
+### **0.2.0**
+
+- Updated to create web extension.
+
 ### **0.1.0**
 
 - Retitled command quoteListInput from 'Quote List: Input Quote' to 'Quote List by Input'.
