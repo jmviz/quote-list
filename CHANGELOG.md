@@ -1,5 +1,10 @@
 # Change Log
 
+### **0.2.1**
+
+- Changed license to MIT. 
+- Accepted dependabot security PR to bump dependency `terser` from 5.10.0 to 5.14.2.
+
 ### **0.2.0**
 
 - Updated to create web extension.
