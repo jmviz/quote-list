@@ -49,7 +49,7 @@ function makeEditFromInput(config) {
 	}).then(inSep => {
 		if (inSep === undefined) return;
 		inSep = new RegExp(inSep);
-		vscode.window.showInputBox({
+ 		vscode.window.showInputBox({
 			ignoreFocusOut: true,
 			prompt: "Enter string for output separator",
 			value: unescape(config.outputSeparator)
@@ -69,10 +69,17 @@ function makeEditFromInput(config) {
 				} else {
 					q1 = q0 = q;
 				}
-				makeEdit(inSep, outSep, q0, q1);
+				vscode.window.showInputBox({
+					ignoreFocusOut: true,
+					prompt: "Print every list elements in a new line? Default value is n (Y/n)",
+					value: "n"
+				}).then( nlflag => {
+						makeEdit(inSep, outSep, q0, q1, nlflag);
+				})
+				
 			 })
 		 })
-	 });
+	});
 }
 
 function escape(s) {
@@ -103,20 +110,20 @@ function unescape(s) {
 	return unescaped;
 }
 
-function makeEdit(inSep, outSep, q0, q1, fallbackSeps) {
+function makeEdit(inSep, outSep, q0, q1, nlflag, fallbackSeps) {
 	let editor = vscode.window.activeTextEditor;
 	if (!editor) return;
 	let doc = editor.document;
 	editor.edit(edit => {
 		for (let sel of editor.selections) {
 			let text = doc.getText(sel);
-			let quotedText = quoteList(text, inSep, outSep, q0, q1, fallbackSeps);
+			let quotedText = quoteList(text, inSep, outSep, q0, q1, nlflag, fallbackSeps);
 			edit.replace(sel, quotedText);
 		}
 	})
 }
 
-function quoteList(text, inSep, outSep, q0, q1, fallbackSeps) {
+function quoteList(text, inSep, outSep, q0, q1, nlflag, fallbackSeps) {
 	let quotedText = "";
 	let items = text.split(inSep);
 	if (items.length == 1 && fallbackSeps) {
@@ -136,9 +143,13 @@ function quoteList(text, inSep, outSep, q0, q1, fallbackSeps) {
 		let end = item.match(/\s*$/)[0];
 		item = item.trim();
 		let s = (i < items.length - 1) ? outSep : "";
-		quotedText += start + q0 + item + q1 + s + end;
+		if ((nlflag == 'Y') && (i < items.length - 1)) {
+			quotedText += start + q0 + item + q1 + s + end + '\n';
+		} else {
+			quotedText += start + q0 + item + q1 + s + end;
+		}
 	}
-	return quotedText;
+		return quotedText;
 }
 
 module.exports = {

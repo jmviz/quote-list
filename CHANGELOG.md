@@ -1,5 +1,10 @@
 # Change Log
 
+### **0.2.2**
+
+- Updated to print every list elements in a new line if is needed.
+- Added configuration properties: nflag.
+
 ### **0.2.1**
 
 - Changed license to MIT. 
