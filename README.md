@@ -1,4 +1,9 @@
-# Quote List
+# [Quote List](https://marketplace.visualstudio.com/items?itemName=jmviz.quote-list)
+
+![Visual Studio Marketplace Version](https://badgen.net/vs-marketplace/v/jmviz.quote-list)
+![Visual Studio Marketplace Installs](https://badgen.net/vs-marketplace/i/jmviz.quote-list)
+![Visual Studio Marketplace Downloads](https://badgen.net/vs-marketplace/d/jmviz.quote-list)
+![Visual Studio Marketplace Rating](https://badgen.net/vs-marketplace/rating/jmviz.quote-list)
 
 Quote each element of a list.
 
